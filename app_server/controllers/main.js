@@ -1,7 +1,9 @@
-/*
- * GET home page.
- */
+/* GET 'about us' page */
+exports.about = function(req, res){
+    res.render('index', { title: 'About us' });
+};
 
-exports.index = function(req, res){
-    res.render('index', { title: 'Express' });
+/* GET 'sign in' page */
+exports.signin = function(req, res){
+    res.render('index', { title: 'Sign in' });
 };
