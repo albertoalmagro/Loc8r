@@ -1,3 +1,5 @@
-//
-   Created by alberto on 28.10.14.
-
+mixin outputRating(rating)
+   - for (var i = 1; i <= rating; i++)
+      span.glyphicon.glyphicon-star
+   - for (var i = rating; i < 5; i++)
+      span.glyphicon.glyphicon-star-empty
