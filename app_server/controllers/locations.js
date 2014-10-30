@@ -61,13 +61,13 @@ exports.locationInfo = function (req, res) {
             reviews: [{
                 author: 'Simon Holmes',
                 rating: 5,
-                timestamp: '16 July 2013',
-                reviewText: 'What a great place. I can\'t say enough good things about it.'
+                timestamp: new Date("Jul 16, 2013"),
+                reviewText: "What a great place. I can't say enough good things about it."
             },{
                 author: 'Charlie Chaplin',
                 rating: 3,
-                timestamp: '16 June 2013',
-                reviewText: "It was okay. Coffee wasn\'t great, but the wifi was fast."
+                timestamp: new Date("16 June 2013"),
+                reviewText: "It was okay. Coffee wasn't great, but the wifi was fast."
             }]
         }
     });
