@@ -1,31 +1,40 @@
-/* GET 'home' page */
-exports.homelist = function (req, res) {
+'use strict';
+var request = require("request");
+/* Set server address for request */
+var apiOptions = {
+    server : "http://localhost:3000"
+};
+if (process.env.NODE_ENV === 'production') {
+    apiOptions.server = "http://enigmatic-cove-6704.herokuapp.com";
+}
+
+var renderHomepage = function (req, res, responseBody) {
     res.render('locations-list', {
         title: 'Loc8r - find a place to work with wifi',
-        pageHeader : {
+        pageHeader: {
             title: 'Loc8r',
             strapline: 'Find places to work with wifi near you!'
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint? Let Loc8r find the place you're looking for.",
-        locations: [{
-            name: 'Starcups',
-            address: '125 High Street, Reading, RG6 1PS',
-            rating: 3,
-            facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-            distance: '100m'
-        }, {
-            name: 'Burger Queen',
-            address: '125 High Street, Reading, RG6 1PS',
-            rating: 2,
-            facilities: ['Hot drinks', 'Food'],
-            distance: '150m'
-        }, {
-            name: 'Cafe Nero',
-            address: '125 High Street, Reading, RG6 1PS',
-            rating: 4,
-            facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-            distance: '250m'
-        }]
+        locations: responseBody
+    });
+};
+/* GET 'home' page */
+exports.homelist = function (req, res) {
+    var requestOptions, path;
+    path = '/api/locations';
+    requestOptions = {
+        url: apiOptions.server + path,
+        method: 'GET',
+        json: {},
+        qs: {
+            lng: 11.6309,
+            lat: 48.2499,
+            maxDistance: 20
+        }
+    };
+    request(requestOptions, function (err, response, body) {
+        renderHomepage(req, res, body);
     });
 };
 
