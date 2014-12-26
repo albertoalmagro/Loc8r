@@ -19,7 +19,7 @@ block content
                   .panel-body
                      each time in location.openingTimes
                         p
-                           | #{time.days} :
+                           | #{time.days}: &nbsp;
                            if time.closed
                               | closed
                            else
@@ -52,10 +52,13 @@ block content
                                  .well.well-sm.review-header
                                     span.rating
                                        +outputRating(review.rating)
-                                    span.reviewAuthor= review.author
-                                    small.reviewTimestamp= review.timestamp
+                                    span.reviewAuthor= review.author.displayName
+                                    small.reviewTimestamp
+                                       +formatDate(review.createdOn)
                                  .col-xs-12
-                                    p !{(review.reviewText).replace(/\n/g, '<br/>')}
+                                    p
+                                       if review.reviewText
+                                          | !{(review.reviewText).replace(/\n/g, '<br/>')}
       .col-xs-12.col-md-3
          p.lead #{location.name} #{sidebar.context}
          p= sidebar.callToAction
