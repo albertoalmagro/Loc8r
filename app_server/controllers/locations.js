@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var request = require("request");
 /* Set server address for request */
 var apiOptions = {
@@ -39,6 +39,17 @@ var renderDetailPage = function (req, res, locDetail) {
             callToAction: 'If you\'ve been and you like it - or if you don\'t - please leave a review to help other people just like you.'
         },
         location: locDetail
+    });
+};
+
+var renderReviewForm = function (req, res, locDetail) {
+    res.render('location-review-form', {
+        title: 'Review ' + locDetail.name + ' on Loc8r',
+        pageHeader: { title: 'Review ' + locDetail.name },
+        user: {
+            displayName: "Simon Holmes"
+        },
+        error: req.query.err
     });
 };
 
@@ -97,8 +108,21 @@ exports.homelist = function (req, res) {
 
 /* GET 'Location info' page */
 exports.locationInfo = function (req, res) {
+    getLocationInfo(req, res, function (req, res, responseData) {
+        renderDetailPage(req, res, responseData);
+    });
+};
+
+/* GET 'Add review' page */
+exports.addReview = function (req, res) {
+    getLocationInfo(req, res, function (req, res, responseData) {
+        renderReviewForm(req, res, responseData);
+    });
+};
+
+var getLocationInfo = function (req, res, callback) {
     var requestOptions, path;
-    path = '/api/locations/' +req.params.locationid;
+    path = '/api/locations/' + req.params.locationid;
     requestOptions = {
         url: apiOptions.server + path,
         method: 'GET',
@@ -111,20 +135,40 @@ exports.locationInfo = function (req, res) {
                 lng: body.coords[0],
                 lat: body.coords[1]
             };
-            renderDetailPage(req, res, data);
+            callback(req, res, data);
         } else {
             _showError(req, res, response.statusCode);
         }
     });
 };
 
-/* GET 'Add review' page */
-exports.addReview = function (req, res) {
-    res.render('location-review-form', {
-        title: 'Review Starcups on Loc8r',
-        pageHeader: { title: 'Review Starcups' },
-        user: {
-            displayName: "Simon Holmes"
-        }
-    });
+/* POST 'Add review' form */
+exports.doAddReview = function (req, res) {
+    var requestOptions, path, locationid, postdata;
+    locationid = req.params.locationid;
+    path = '/api/locations/' + locationid + '/reviews';
+    postdata = {
+        author: req.body.name,
+        rating: parseInt(req.body.rating, 10),
+        reviewText: req.body.review
+    };
+    requestOptions = {
+        url: apiOptions.server + path,
+        method: 'POST',
+        json: postdata
+    };
+    if (!postdata.author || !postdata.rating || !postdata.reviewText) {
+        res.redirect('/location/' + locationid + '/review/new?err=val');
+    } else {
+        request(requestOptions, function (err, response, body) {
+            if (response.statusCode === 201) {
+                res.redirect('/location/' + locationid);
+            } else if (response.statusCode === 400 && body.name && body.name === 'ValidationError') {
+                res.redirect('/location/' + locationid + '/review/new?err=val');
+            } else {
+                console.log(body);
+                _showError(req, res, response.statusCode);
+            }
+        });
+    }
 };

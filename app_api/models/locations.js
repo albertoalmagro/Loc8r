@@ -9,10 +9,10 @@ var openingTimeSchema = new mongoose.Schema({
 
 var reviewSchema = new mongoose.Schema({
     author: {
-        displayName: String
+        displayName: {type: String, required: true}
     },
     rating: {type: Number, required: true, min: 0, max: 5},
-    reviewText: String,
+    reviewText: {type: String, required: true},
     createdOn: {type: Date, "default": Date.now}
 });
 
